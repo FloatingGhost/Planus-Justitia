@@ -11,4 +11,5 @@ setup(
     author="Hannah Ward",
     author_email="hannah.ward2@baesystems.com",
     packages=['planus'],
+    install_requires=["pylzma"]
 )
