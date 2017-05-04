@@ -1,4 +1,4 @@
-# Planus Justitiam
+# Planus Justitia
 
 [![Build Status](https://travis-ci.org/FloatingGhost/Planus-Justitiam.svg?branch=master)](https://travis-ci.org/FloatingGhost/Planus-Justitiam)
 
