@@ -159,6 +159,15 @@ class Planus(object):
         with open(os.path.join(self.dbDocLocation, docHash), "rb") as f:
             return self._decompressJSON(f.read())
 
-    def update(self, key):
+    def update(self, key : str, jsonDoc : dict):
         self.log.debug("Updating JSON doc %s", key)
-        pass
+
+        docHash = self.documentList.get(key)
+
+        if not docHash:
+            self.log.debug("Couldn't find document, adding %s", key)
+            self.add(key, jsonDoc)
+
+        with open(os.path.join(self.dbDocLocation, docHash), "wb") as f:
+            self.log.debug("Writing to %s", f)
+            f.write(self._compressJSON(jsonDoc))

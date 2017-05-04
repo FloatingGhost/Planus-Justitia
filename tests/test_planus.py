@@ -38,3 +38,8 @@ def test_add():
 def test_get():
     j = pln.get("testdoc")
     assert(j == {"this":"is", "a":1, "document":5})
+
+def test_update():
+    pln.update("testdoc", {"updated":"document"})
+    q = pln.get("testdoc")
+    assert(q == {"updated":"document"})
