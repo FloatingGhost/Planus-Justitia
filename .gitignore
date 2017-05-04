@@ -1,3 +1,5 @@
+testDB
+.eggs
 __pycache__
 *.pyc
 *.sw*
