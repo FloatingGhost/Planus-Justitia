@@ -6,7 +6,7 @@ import pylzma
 import hashlib
 import warnings
 import logging
-from .errors import NoDatabase, InvalidDatabase
+from .errors import NoDatabase, InvalidDatabase, DBClosed, NoDocument
 
 class Planus(object):
     """ A Flat-file JSON storage mechanism
@@ -37,7 +37,14 @@ class Planus(object):
             # Try to make it if it doesn't
             self.log.debug("DB not initilised. Creating at %s...", self.dbPath)
             self._initialiseDatabase()
-        
+        else:
+            # DB exists, load it up
+            self.log.debug("DB Exists, loading...")
+            with self._getDBHandle() as f:
+                self.documentList = self._deserialise(f)
+                self.log.debug("Loaded doclist %s", self.documentList)
+        self.CLOSED = False
+
     def _serialise(self):
         """ Generate the DB index file from our doclist """
 
@@ -59,6 +66,7 @@ class Planus(object):
         for line in filter(lambda x:x!="", doclist.split("\n")):
             key,_,value = line.partition("|=|")   
             docs[key.strip()] = value.strip()
+        self.log.debug("DSRL ::  %s", docs)
         return docs
 
     def __repr__(self):
@@ -116,6 +124,9 @@ class Planus(object):
         """
         self.log.debug("Adding JSON doc %s", key)
 
+        if self.CLOSED:
+            raise DBClosed("Database is closed!")
+
         # Check if we already know the key
         if key in self.documentList:
             warnings.warn("Document key already exists. Try using update().")
@@ -138,6 +149,9 @@ class Planus(object):
         """
         self.log.debug("Removing JSON doc %s", key)
 
+        if self.CLOSED:
+            raise DBClosed("Database is closed!")
+
         docHash = self.documentList.get(key)
         self.log.debug("Removing hash %s", docHash)
 
@@ -151,9 +165,15 @@ class Planus(object):
 
     def get(self, key):
         self.log.debug("Getting JSON doc %s", key)
+        
+        if self.CLOSED:
+            raise DBClosed("Database is closed!")
+
         docHash = self.documentList.get(key)
+        self.log.debug("Getting hash %s", docHash)
 
         if not docHash:
+            self.log.info("Not found from %s", self.documentList)
             raise NoDocument("{} doesn't exist!".format(key))
 
         with open(os.path.join(self.dbDocLocation, docHash), "rb") as f:
@@ -161,6 +181,9 @@ class Planus(object):
 
     def update(self, key : str, jsonDoc : dict):
         self.log.debug("Updating JSON doc %s", key)
+
+        if self.CLOSED:
+            raise DBClosed("Database is closed!")
 
         docHash = self.documentList.get(key)
 
@@ -171,3 +194,8 @@ class Planus(object):
         with open(os.path.join(self.dbDocLocation, docHash), "wb") as f:
             self.log.debug("Writing to %s", f)
             f.write(self._compressJSON(jsonDoc))
+
+    def close(self):
+        self._writeIndex()
+        self.CLOSED = True
+        self.documentList = {}

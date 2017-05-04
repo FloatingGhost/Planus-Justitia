@@ -8,3 +8,6 @@ class NoDocument(Exception):
 
 class InvalidDatabase(Exception):
     pass
+
+class DBClosed(Exception):
+    pass
