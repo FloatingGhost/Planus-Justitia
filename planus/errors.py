@@ -5,3 +5,6 @@ class NoDatabase(Exception):
 
 class NoDocument(Exception):
     pass
+
+class InvalidDatabase(Exception):
+    pass
