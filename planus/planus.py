@@ -26,7 +26,7 @@ class Planus(object):
             
     def _initialiseDatabase(self):
         """ Create the database file and all that """
-        pass
+        
 
     def add(self, key : str, jsonDoc : dict):
         """ Add a new JSON document to the store
@@ -34,10 +34,14 @@ class Planus(object):
         :param key: The storage key to file the document away under
         :param jsonDoc: The JSON object to store
         :rtype: bool
+        """
         pass
 
     def remove(self, key):
         pass
 
     def get(self, key):
+        pass
+
+    def update(self, key):
         pass
