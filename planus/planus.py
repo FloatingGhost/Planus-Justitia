@@ -163,6 +163,17 @@ class Planus(object):
         except FileNotFoundError:
             pass
 
+    def has(self, key):
+        self.log.debug("Checking if we have key %s", key)
+
+        if self.CLOSED:               
+            raise DBClosed("Database is closed!")
+
+        docHash = self.documentList.get(key)
+        if not docHash:
+            return False
+        return True
+ 
     def get(self, key):
         self.log.debug("Getting JSON doc %s", key)
         
@@ -198,4 +209,6 @@ class Planus(object):
     def close(self):
         self._writeIndex()
         self.CLOSED = True
+        self.log.info("Closing database.")
+        self.log.info("Remember, Flat is Justice!")
         self.documentList = {}
