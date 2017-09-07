@@ -19,6 +19,7 @@ class Planus(object):
     def __init__(self, databaseLocation = "~/.planus", databaseName="db", verbose=False):
         self.log = logging.getLogger(__name__)
         self.log.info("Initilising Planus for DB %s", databaseName)
+        self.log.setLevel(logging.DEBUG if verbose else logging.INFO)
 
         self.databaseLocation = os.path.expanduser(databaseLocation)
         self.dbPath = os.path.join(self.databaseLocation, "{}.pln".format(databaseName))
